@@ -6,8 +6,10 @@ const admin = require("firebase-admin");
 
 const configPath = path.join(__dirname, "config.json");
 const sentNewsPath = path.join(__dirname, "sentNews.json");
-const firestoreCollection = "botTelegram";
-const configDocId = "config";
+const firestoreCollection = "config";
+const configDocId = "global";
+const legacyFirestoreCollection = "botTelegram";
+const legacyConfigDocId = "config";
 const sentNewsDocId = "sentNews";
 
 function defaultConfig() {
@@ -17,6 +19,10 @@ function defaultConfig() {
     idioma: "es",
     enabled: false,
     telegramTarget: "",
+    botEnabled: false,
+    botMode: "webhook",
+    allowedOrigins: [],
+    refreshTime: 60,
   };
 }
 
@@ -77,6 +83,20 @@ async function readConfig() {
     const doc = await db.collection(firestoreCollection).doc(configDocId).get();
 
     if (!doc.exists) {
+      const legacyDoc = await db
+        .collection(legacyFirestoreCollection)
+        .doc(legacyConfigDocId)
+        .get();
+
+      if (legacyDoc.exists) {
+        const migratedConfig = {
+          ...defaultConfig(),
+          ...legacyDoc.data(),
+        };
+        await writeConfig(migratedConfig);
+        return migratedConfig;
+      }
+
       const initialConfig = defaultConfig();
       await writeConfig(initialConfig);
       return initialConfig;
@@ -96,12 +116,26 @@ async function writeConfig(config) {
   const db = getFirestoreDb();
 
   if (db) {
-    await db.collection(firestoreCollection).doc(configDocId).set(config);
-    return config;
+    const mergedConfig = {
+      ...defaultConfig(),
+      ...config,
+    };
+
+    await db
+      .collection(firestoreCollection)
+      .doc(configDocId)
+      .set(mergedConfig, { merge: true });
+
+    return mergedConfig;
   }
 
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
-  return config;
+  const mergedConfig = {
+    ...defaultConfig(),
+    ...config,
+  };
+
+  fs.writeFileSync(configPath, JSON.stringify(mergedConfig, null, 2), "utf8");
+  return mergedConfig;
 }
 
 async function readSentNews() {

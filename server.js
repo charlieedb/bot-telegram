@@ -22,6 +22,13 @@ let botRuntime = {
 };
 
 function normalizeConfig(input) {
+  const rawAllowedOrigins = Array.isArray(input.allowedOrigins)
+    ? input.allowedOrigins
+    : typeof input.allowedOrigins === "string"
+      ? input.allowedOrigins.split(",")
+      : [];
+  const refreshHours = Number(input.refreshTime);
+
   return {
     temas: Array.isArray(input.temas)
       ? input.temas
@@ -33,6 +40,16 @@ function normalizeConfig(input) {
     idioma: String(input.idioma || "").trim().toLowerCase(),
     enabled: input.enabled === true,
     telegramTarget: String(input.telegramTarget || "").trim(),
+    botEnabled:
+      typeof input.botEnabled === "boolean" ? input.botEnabled : input.enabled === true,
+    botMode: String(input.botMode || "webhook").trim().toLowerCase(),
+    allowedOrigins: rawAllowedOrigins
+      .map((origin) => String(origin).trim())
+      .filter(Boolean)
+      .slice(0, 20),
+    refreshTime: Number.isFinite(refreshHours) && refreshHours > 0
+      ? refreshHours
+      : Math.max(1, Math.round(Number(input.intervalo) / (60 * 60 * 1000)) || 1),
   };
 }
 
@@ -55,6 +72,26 @@ function validateConfig(config) {
 
   if (typeof config.telegramTarget !== "string") {
     return "El campo 'telegramTarget' debe ser texto";
+  }
+
+  if (typeof config.botEnabled !== "boolean") {
+    return "El campo 'botEnabled' debe ser booleano";
+  }
+
+  if (!["webhook", "polling", "send-only"].includes(config.botMode)) {
+    return "El campo 'botMode' debe ser uno de: webhook, polling, send-only";
+  }
+
+  if (!Array.isArray(config.allowedOrigins)) {
+    return "El campo 'allowedOrigins' debe ser un array";
+  }
+
+  if (
+    !Number.isFinite(config.refreshTime) ||
+    config.refreshTime <= 0 ||
+    config.refreshTime > 24
+  ) {
+    return "El campo 'refreshTime' debe ser un numero entre 1 y 24";
   }
 
   return null;
