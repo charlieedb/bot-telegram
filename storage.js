@@ -2,8 +2,7 @@ require("dotenv").config();
 
 const fs = require("fs");
 const path = require("path");
-const { cert, getApps, initializeApp } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+const admin = require("firebase-admin");
 
 const configPath = path.join(__dirname, "config.json");
 const sentNewsPath = path.join(__dirname, "sentNews.json");
@@ -21,29 +20,7 @@ function defaultConfig() {
   };
 }
 
-function parseServiceAccountJson() {
-  const rawJson = String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || "").trim();
-
-  if (!rawJson) {
-    return null;
-  }
-
-  const parsedJson = JSON.parse(rawJson);
-
-  if (typeof parsedJson.private_key === "string") {
-    parsedJson.private_key = parsedJson.private_key.replace(/\\n/g, "\n");
-  }
-
-  return parsedJson;
-}
-
 function getFirebaseCredentials() {
-  const serviceAccount = parseServiceAccountJson();
-
-  if (serviceAccount) {
-    return serviceAccount;
-  }
-
   const projectId = String(process.env.FIREBASE_PROJECT_ID || "").trim();
   const clientEmail = String(process.env.FIREBASE_CLIENT_EMAIL || "").trim();
   const privateKey = String(process.env.FIREBASE_PRIVATE_KEY || "")
@@ -68,13 +45,17 @@ function getFirestoreDb() {
     return null;
   }
 
-  if (!getApps().length) {
-    initializeApp({
-      credential: cert(credentials),
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: credentials.projectId,
+        clientEmail: credentials.clientEmail,
+        privateKey: credentials.privateKey,
+      }),
     });
   }
 
-  return getFirestore();
+  return admin.firestore();
 }
 
 function getStorageMode() {

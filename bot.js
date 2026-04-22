@@ -1,8 +1,7 @@
 require("dotenv").config();
 
-const fs = require("fs");
-const path = require("path");
 const TelegramBot = require("node-telegram-bot-api");
+const { readConfig, readSentNews, writeSentNews } = require("./storage");
 
 const token = process.env.TELEGRAM_TOKEN;
 const chatId = process.env.CHAT_ID;
@@ -12,8 +11,6 @@ const webhookPath = process.env.TELEGRAM_WEBHOOK_PATH || "/telegram/webhook";
 const webhookSecret =
   process.env.TELEGRAM_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET || "";
 const sentNewsUrls = [];
-const configPath = path.join(__dirname, "config.json");
-const sentNewsPath = path.join(__dirname, "sentNews.json");
 const NEWS_API_URL = "https://newsapi.org/v2/everything";
 
 let newsInterval = null;
@@ -69,78 +66,28 @@ function resumenSimple(titulo, descripcion) {
   return `${resumen}...`;
 }
 
-function loadSentNews() {
+async function loadSentNews() {
   try {
-    if (!fs.existsSync(sentNewsPath)) {
-      fs.writeFileSync(sentNewsPath, JSON.stringify([], null, 2), "utf8");
-    }
-
-    const data = fs.readFileSync(sentNewsPath, "utf8");
-    const parsedData = JSON.parse(data);
-
-    if (!Array.isArray(parsedData)) {
-      throw new Error("sentNews.json no contiene un array valido");
-    }
+    const parsedData = await readSentNews();
 
     sentNewsUrls.length = 0;
     sentNewsUrls.push(...parsedData.filter((url) => typeof url === "string"));
 
     if (sentNewsUrls.length > 50) {
       sentNewsUrls.splice(0, sentNewsUrls.length - 50);
-      saveSentNews();
+      await saveSentNews();
     }
   } catch (error) {
-    console.log("Error cargando sentNews.json:", error.message);
+    console.log("Error cargando noticias enviadas:", error.message);
     sentNewsUrls.length = 0;
-
-    try {
-      fs.writeFileSync(sentNewsPath, JSON.stringify([], null, 2), "utf8");
-    } catch (writeError) {
-      console.log("Error recreando sentNews.json:", writeError.message);
-    }
   }
 }
 
-function saveSentNews() {
+async function saveSentNews() {
   try {
-    fs.writeFileSync(
-      sentNewsPath,
-      JSON.stringify(sentNewsUrls, null, 2),
-      "utf8",
-    );
+    await writeSentNews(sentNewsUrls);
   } catch (error) {
-    console.log("Error guardando sentNews.json:", error.message);
-  }
-}
-
-function readConfig() {
-  try {
-    const data = fs.readFileSync(configPath, "utf8");
-    const config = JSON.parse(data);
-
-    if (!Array.isArray(config.temas)) {
-      throw new Error("config.json debe incluir un array 'temas'");
-    }
-
-    if (!config.intervalo || Number(config.intervalo) <= 0) {
-      throw new Error("config.json debe incluir un 'intervalo' valido");
-    }
-
-    if (!config.idioma) {
-      throw new Error("config.json debe incluir un 'idioma' valido");
-    }
-
-    return {
-      temas: config.temas.filter(
-        (tema) => typeof tema === "string" && tema.trim(),
-      ),
-      intervalo: Number(config.intervalo),
-      idioma: String(config.idioma).trim(),
-      enabled: config.enabled === true,
-    };
-  } catch (error) {
-    console.log("Error leyendo config.json:", error.message);
-    return null;
+    console.log("Error guardando noticias enviadas:", error.message);
   }
 }
 
@@ -221,9 +168,12 @@ async function sendLatestConfiguredNews() {
     return;
   }
 
-  const config = readConfig();
+  let config;
 
-  if (!config) {
+  try {
+    config = await readConfig();
+  } catch (error) {
+    console.log("Error leyendo configuracion:", error.message);
     return;
   }
 
@@ -281,7 +231,7 @@ ${firstNews.url}`;
     }
 
     if (hasChanges) {
-      saveSentNews();
+      await saveSentNews();
     }
   } catch (error) {
     console.log("Error enviando noticia:", error.message);
@@ -290,10 +240,13 @@ ${firstNews.url}`;
   }
 }
 
-function startNewsInterval() {
-  const config = readConfig();
+async function startNewsInterval() {
+  let config;
 
-  if (!config) {
+  try {
+    config = await readConfig();
+  } catch (error) {
+    console.log("Error leyendo configuracion:", error.message);
     return;
   }
 
@@ -321,7 +274,11 @@ function startNewsInterval() {
   }
 
   currentInterval = config.intervalo;
-  newsInterval = setInterval(sendLatestConfiguredNews, currentInterval);
+  newsInterval = setInterval(() => {
+    sendLatestConfiguredNews().catch((error) => {
+      console.log("Error en el intervalo de noticias:", error.message);
+    });
+  }, currentInterval);
 }
 
 function getWebhookUrl() {
@@ -337,9 +294,13 @@ function getWebhookUrl() {
 
 async function initializeBot() {
   registerBotHandlers();
-  loadSentNews();
-  startNewsInterval();
-  setInterval(startNewsInterval, 5000);
+  await loadSentNews();
+  await startNewsInterval();
+  setInterval(() => {
+    startNewsInterval().catch((error) => {
+      console.log("Error actualizando el intervalo:", error.message);
+    });
+  }, 5000);
 
   if (mode === "polling") {
     try {

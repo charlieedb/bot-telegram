@@ -3,287 +3,166 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configuracion del Bot</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f4f6f8;
-        margin: 0;
-        padding: 24px;
-      }
-
-      .container {
-        max-width: 500px;
-        margin: auto;
-        background: #fff;
-        padding: 24px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      }
-
-      h1 {
-        margin-top: 0;
-      }
-
-      label {
-        font-weight: bold;
-        display: block;
-        margin-top: 16px;
-      }
-
-      .tags-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        border: 1px solid #ccc;
-        padding: 8px;
-        border-radius: 6px;
-        min-height: 42px;
-      }
-
-      .tag {
-        background: #0d6efd;
-        color: white;
-        padding: 6px 10px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-      }
-
-      .tag span {
-        cursor: pointer;
-        font-weight: bold;
-      }
-
-      .toggle-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-top: 20px;
-        padding: 14px 16px;
-        border: 1px solid #d9dee8;
-        border-radius: 8px;
-        background: #f8fafc;
-      }
-
-      .toggle-copy {
-        flex: 1;
-      }
-
-      .toggle-copy p {
-        margin: 4px 0 0;
-        font-size: 14px;
-        color: #4b5563;
-      }
-
-      .switch {
-        position: relative;
-        width: 52px;
-        height: 30px;
-        display: inline-block;
-      }
-
-      .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-
-      .slider {
-        position: absolute;
-        inset: 0;
-        cursor: pointer;
-        background: #cbd5e1;
-        border-radius: 999px;
-        transition: background 0.2s ease;
-      }
-
-      .slider::before {
-        content: "";
-        position: absolute;
-        width: 22px;
-        height: 22px;
-        left: 4px;
-        top: 4px;
-        background: #fff;
-        border-radius: 50%;
-        transition: transform 0.2s ease;
-      }
-
-      .switch input:checked + .slider {
-        background: #16a34a;
-      }
-
-      .switch input:checked + .slider::before {
-        transform: translateX(22px);
-      }
-
-      #temaInput {
-        border: none;
-        outline: none;
-        flex: 1;
-        min-width: 120px;
-      }
-
-      input,
-      select,
-      button {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        box-sizing: border-box;
-      }
-
-      button {
-        background: #0d6efd;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-
-      #status {
-        margin-top: 10px;
-        min-height: 18px;
-      }
-    </style>
+    <title>NoticiasYA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <div class="container">
-      <h1>Configuracion del Bot</h1>
-
-      <div class="toggle-row">
-        <div class="toggle-copy">
-          <strong>Envio automatico</strong>
-          <p>Activalo solo cuando ya tengas la configuracion lista.</p>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Panel de control</div>
+          <h1 class="title">Noticias<span>YA</span></h1>
+          <p class="lead">
+            Configura en un solo lugar los temas, el idioma y la frecuencia con la
+            que quieres recibir noticias. El panel esta pensado para escalar luego a
+            suscripciones individuales en Telegram.
+          </p>
+          <div class="signature">
+            Backend listo para conectarse con tu front en Firebase
+          </div>
         </div>
-        <label class="switch" for="enabled">
-          <input id="enabled" type="checkbox" />
-          <span class="slider"></span>
-        </label>
-      </div>
 
-      <label for="temaInput">Temas</label>
-      <div class="tags-container" id="tagsContainer">
-        <input id="temaInput" placeholder="Escribi y presiona Enter" />
-      </div>
+        <div class="hero-stats">
+          <article class="stat-card">
+            <span>Frecuencia</span>
+            <strong id="heroFrequency">Cada 1 hora</strong>
+            <p>El bot consulta noticias segun el intervalo que elijas.</p>
+          </article>
+          <article class="stat-card">
+            <span>Idioma activo</span>
+            <strong id="heroLanguage">Espanol</strong>
+            <p>Las busquedas se filtran por el idioma seleccionado.</p>
+          </article>
+          <article class="stat-card">
+            <span>Estado</span>
+            <strong id="heroStatus">Bot desactivado</strong>
+            <p>Puedes dejar toda la configuracion guardada antes de encenderlo.</p>
+          </article>
+        </div>
+      </section>
 
-      <label for="intervalo">Intervalo (ms)</label>
-      <input id="intervalo" type="number" min="10000" value="60000" />
+      <section class="layout">
+        <section class="panel">
+          <h2>Configuracion principal</h2>
+          <p class="panel-intro">
+            Define los intereses del usuario, el intervalo de envio y el idioma de
+            las noticias que se van a buscar.
+          </p>
 
-      <label for="idioma">Idioma</label>
-      <select id="idioma">
-        <option value="es">es</option>
-        <option value="en">en</option>
-      </select>
+          <div class="grid">
+            <div class="field">
+              <div class="subheading">
+                <span>Temas que me interesan</span>
+                <small>Presiona Enter para agregar cada uno</small>
+              </div>
+              <div class="tag-box" id="tagsContainer">
+                <input
+                  id="temaInput"
+                  type="text"
+                  placeholder="Ej: inteligencia artificial, economia, futbol"
+                />
+              </div>
+            </div>
 
-      <button id="saveButton">Guardar configuracion</button>
-      <p id="status"></p>
-    </div>
+            <div class="double">
+              <div class="field">
+                <label for="frecuencia">
+                  <span>Frecuencia</span>
+                  <small>Entre 1 y 24 horas</small>
+                </label>
+                <select id="frecuencia" class="control"></select>
+              </div>
 
-    <script>
-      const temaInput = document.getElementById("temaInput");
-      const tagsContainer = document.getElementById("tagsContainer");
-      const intervaloInput = document.getElementById("intervalo");
-      const idiomaSelect = document.getElementById("idioma");
-      const enabledInput = document.getElementById("enabled");
-      const statusText = document.getElementById("status");
+              <div class="field">
+                <label for="idioma">
+                  <span>Idioma</span>
+                  <small>Filtra las noticias por idioma</small>
+                </label>
+                <select id="idioma" class="control">
+                  <option value="es">Espanol</option>
+                  <option value="en">Ingles</option>
+                  <option value="pt">Portugues</option>
+                  <option value="de">Aleman</option>
+                </select>
+              </div>
+            </div>
 
-      let temas = [];
+            <div class="field">
+              <label for="telegramTarget">
+                <span>Usuario o numero de Telegram</span>
+                <small>Campo reservado para futuras suscripciones</small>
+              </label>
+              <input
+                id="telegramTarget"
+                class="control"
+                type="text"
+                placeholder="@usuario, +54911..., o un identificador interno"
+              />
+            </div>
 
-      function renderTags() {
-        tagsContainer.querySelectorAll(".tag").forEach((element) => {
-          element.remove();
-        });
+            <div class="toggle-panel">
+              <div>
+                <strong>Activar o desactivar el bot</strong>
+                <p>
+                  Cuando esta apagado, la configuracion queda guardada pero no se
+                  envian noticias automaticamente.
+                </p>
+              </div>
+              <label class="switch" for="enabled">
+                <input id="enabled" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
 
-        temas.forEach((tema, index) => {
-          const tag = document.createElement("div");
-          tag.className = "tag";
-          tag.innerHTML = `${tema} <span data-index="${index}">&times;</span>`;
-          tagsContainer.insertBefore(tag, temaInput);
-        });
-      }
+            <div class="actions">
+              <button id="saveButton" class="primary">Guardar configuracion</button>
+              <div id="status" class="status"></div>
+            </div>
+          </div>
+        </section>
 
-      temaInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
+        <aside class="panel">
+          <h2>Resumen rapido</h2>
+          <p class="panel-intro">
+            Antes de monetizar, ya dejas armado el flujo base para futuras
+            suscripciones y administracion de intereses.
+          </p>
 
-          const value = temaInput.value.trim();
+          <div class="mini-grid">
+            <article class="mini-card">
+              <strong>Tags de intereses</strong>
+              <p>
+                Cada tema se guarda como una etiqueta independiente para que luego
+                puedas usarla en filtros, planes o perfiles de usuario.
+              </p>
+            </article>
+            <article class="mini-card">
+              <strong>Telegram listo para crecer</strong>
+              <p>
+                El identificador de Telegram se guarda aunque hoy no afecte el envio.
+                Eso te deja preparada la etapa de suscripcion.
+              </p>
+            </article>
+            <article class="mini-card">
+              <strong>Busqueda por idioma</strong>
+              <p>
+                Espanol, Ingles, Portugues y Aleman se traducen a los codigos que usa
+                el backend para consultar las noticias.
+              </p>
+            </article>
+          </div>
+        </aside>
+      </section>
+    </main>
 
-          if (value && !temas.includes(value)) {
-            temas.push(value);
-            renderTags();
-          }
-
-          temaInput.value = "";
-        }
-      });
-
-      tagsContainer.addEventListener("click", (event) => {
-        if (event.target.tagName === "SPAN") {
-          const index = Number(event.target.dataset.index);
-          temas.splice(index, 1);
-          renderTags();
-        }
-      });
-
-      async function loadConfig() {
-        try {
-          const response = await fetch("/config");
-          const config = await response.json();
-
-          temas = Array.isArray(config.temas) ? config.temas : [];
-          intervaloInput.value = config.intervalo || 60000;
-          idiomaSelect.value = config.idioma || "es";
-          enabledInput.checked = config.enabled === true;
-
-          renderTags();
-        } catch (error) {
-          statusText.textContent = "Error cargando config";
-        }
-      }
-
-      async function saveConfig() {
-        if (enabledInput.checked && !temas.length) {
-          statusText.textContent =
-            "Agrega al menos un tema antes de activar el envio automatico";
-          return;
-        }
-
-        const config = {
-          temas,
-          intervalo: Number(intervaloInput.value),
-          idioma: idiomaSelect.value,
-          enabled: enabledInput.checked,
-        };
-
-        try {
-          const response = await fetch("/config", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(config),
-          });
-
-          if (!response.ok) {
-            throw new Error("No se pudo guardar la configuracion");
-          }
-
-          statusText.textContent = enabledInput.checked
-            ? "Configuracion guardada y envio automatico activado"
-            : "Configuracion guardada con envio automatico pausado";
-        } catch (error) {
-          statusText.textContent = "Error al guardar";
-        }
-      }
-
-      document
-        .getElementById("saveButton")
-        .addEventListener("click", saveConfig);
-
-      loadConfig();
-    </script>
+    <script src="./runtime-config.js"></script>
+    <script type="module" src="./firebase-init.js"></script>
+    <script type="module" src="./index.js"></script>
   </body>
 </html>

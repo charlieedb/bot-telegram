@@ -1,6 +1,7 @@
 {
   "temas": [],
-  "intervalo": 60000,
+  "intervalo": 3600000,
   "idioma": "es",
-  "enabled": false
+  "enabled": false,
+  "telegramTarget": ""
 }
