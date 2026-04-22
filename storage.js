@@ -17,11 +17,11 @@ function defaultConfig() {
     temas: [],
     intervalo: 60 * 60 * 1000,
     idioma: "es",
-    enabled: false,
-    telegramTarget: "",
+    enabled: true,
+    telegramTarget: null,
     botEnabled: false,
     botMode: "webhook",
-    allowedOrigins: [],
+    allowedOrigins: ["https://noticias-ya.web.app"],
     refreshTime: 60,
   };
 }
@@ -80,32 +80,41 @@ async function readConfig() {
   const db = getFirestoreDb();
 
   if (db) {
-    const doc = await db.collection(firestoreCollection).doc(configDocId).get();
+    const ref = db.collection(firestoreCollection).doc(configDocId);
 
-    if (!doc.exists) {
-      const legacyDoc = await db
-        .collection(legacyFirestoreCollection)
-        .doc(legacyConfigDocId)
-        .get();
+    try {
+      const doc = await ref.get();
 
-      if (legacyDoc.exists) {
-        const migratedConfig = {
-          ...defaultConfig(),
-          ...legacyDoc.data(),
-        };
-        await writeConfig(migratedConfig);
-        return migratedConfig;
+      if (!doc.exists) {
+        console.log("Config no existe. Creando config default...");
+
+        const legacyDoc = await db
+          .collection(legacyFirestoreCollection)
+          .doc(legacyConfigDocId)
+          .get();
+
+        if (legacyDoc.exists) {
+          const migratedConfig = {
+            ...defaultConfig(),
+            ...legacyDoc.data(),
+          };
+          await ref.set(migratedConfig, { merge: true });
+          return migratedConfig;
+        }
+
+        const initialConfig = defaultConfig();
+        await ref.set(initialConfig, { merge: true });
+        return initialConfig;
       }
 
-      const initialConfig = defaultConfig();
-      await writeConfig(initialConfig);
-      return initialConfig;
+      return {
+        ...defaultConfig(),
+        ...doc.data(),
+      };
+    } catch (error) {
+      console.error("Error leyendo configuracion:", error);
+      return defaultConfig();
     }
-
-    return {
-      ...defaultConfig(),
-      ...doc.data(),
-    };
   }
 
   ensureLocalFile(configPath, defaultConfig());
