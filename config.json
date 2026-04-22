@@ -1,5 +1,6 @@
 {
-  "temas": ["tecnologia"],
-  "intervalo": 30000,
-  "idioma": "es"
+  "temas": [],
+  "intervalo": 60000,
+  "idioma": "es",
+  "enabled": false
 }

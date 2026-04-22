@@ -1,12 +1,9 @@
 <!doctype html>
-
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ConfiguraciÃ³n del Bot</title>
-
-    ```
+    <title>Configuracion del Bot</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -60,6 +57,70 @@
         font-weight: bold;
       }
 
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border: 1px solid #d9dee8;
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .toggle-copy {
+        flex: 1;
+      }
+
+      .toggle-copy p {
+        margin: 4px 0 0;
+        font-size: 14px;
+        color: #4b5563;
+      }
+
+      .switch {
+        position: relative;
+        width: 52px;
+        height: 30px;
+        display: inline-block;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        background: #cbd5e1;
+        border-radius: 999px;
+        transition: background 0.2s ease;
+      }
+
+      .slider::before {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        left: 4px;
+        top: 4px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s ease;
+      }
+
+      .switch input:checked + .slider {
+        background: #16a34a;
+      }
+
+      .switch input:checked + .slider::before {
+        transform: translateX(22px);
+      }
+
       #temaInput {
         border: none;
         outline: none;
@@ -89,29 +150,37 @@
         min-height: 18px;
       }
     </style>
-    ```
   </head>
-
   <body>
     <div class="container">
-      <h1>ConfiguraciÃ³n del Bot</h1>
+      <h1>Configuracion del Bot</h1>
 
-      ```
-      <label>Temas</label>
-      <div class="tags-container" id="tagsContainer">
-        <input id="temaInput" placeholder="EscribÃ­ y presionÃ¡ Enter" />
+      <div class="toggle-row">
+        <div class="toggle-copy">
+          <strong>Envio automatico</strong>
+          <p>Activalo solo cuando ya tengas la configuracion lista.</p>
+        </div>
+        <label class="switch" for="enabled">
+          <input id="enabled" type="checkbox" />
+          <span class="slider"></span>
+        </label>
       </div>
 
-      <label>Intervalo (ms)</label>
+      <label for="temaInput">Temas</label>
+      <div class="tags-container" id="tagsContainer">
+        <input id="temaInput" placeholder="Escribi y presiona Enter" />
+      </div>
+
+      <label for="intervalo">Intervalo (ms)</label>
       <input id="intervalo" type="number" min="10000" value="60000" />
 
-      <label>Idioma</label>
+      <label for="idioma">Idioma</label>
       <select id="idioma">
         <option value="es">es</option>
         <option value="en">en</option>
       </select>
 
-      <button id="saveButton">Guardar configuraciÃ³n</button>
+      <button id="saveButton">Guardar configuracion</button>
       <p id="status"></p>
     </div>
 
@@ -120,24 +189,27 @@
       const tagsContainer = document.getElementById("tagsContainer");
       const intervaloInput = document.getElementById("intervalo");
       const idiomaSelect = document.getElementById("idioma");
+      const enabledInput = document.getElementById("enabled");
       const statusText = document.getElementById("status");
 
       let temas = [];
 
       function renderTags() {
-        tagsContainer.querySelectorAll(".tag").forEach((e) => e.remove());
+        tagsContainer.querySelectorAll(".tag").forEach((element) => {
+          element.remove();
+        });
 
         temas.forEach((tema, index) => {
           const tag = document.createElement("div");
           tag.className = "tag";
-          tag.innerHTML = `${tema} <span data-index="${index}">Ã—</span>`;
+          tag.innerHTML = `${tema} <span data-index="${index}">&times;</span>`;
           tagsContainer.insertBefore(tag, temaInput);
         });
       }
 
-      temaInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
+      temaInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
 
           const value = temaInput.value.trim();
 
@@ -150,9 +222,9 @@
         }
       });
 
-      tagsContainer.addEventListener("click", (e) => {
-        if (e.target.tagName === "SPAN") {
-          const index = e.target.dataset.index;
+      tagsContainer.addEventListener("click", (event) => {
+        if (event.target.tagName === "SPAN") {
+          const index = Number(event.target.dataset.index);
           temas.splice(index, 1);
           renderTags();
         }
@@ -160,22 +232,24 @@
 
       async function loadConfig() {
         try {
-          const res = await fetch("/config");
-          const config = await res.json();
+          const response = await fetch("/config");
+          const config = await response.json();
 
-          temas = config.temas || [];
+          temas = Array.isArray(config.temas) ? config.temas : [];
           intervaloInput.value = config.intervalo || 60000;
           idiomaSelect.value = config.idioma || "es";
+          enabledInput.checked = config.enabled === true;
 
           renderTags();
-        } catch {
+        } catch (error) {
           statusText.textContent = "Error cargando config";
         }
       }
 
       async function saveConfig() {
-        if (!temas.length) {
-          statusText.textContent = "AgregÃ¡ al menos un tema";
+        if (enabledInput.checked && !temas.length) {
+          statusText.textContent =
+            "Agrega al menos un tema antes de activar el envio automatico";
           return;
         }
 
@@ -183,17 +257,24 @@
           temas,
           intervalo: Number(intervaloInput.value),
           idioma: idiomaSelect.value,
+          enabled: enabledInput.checked,
         };
 
         try {
-          await fetch("/config", {
+          const response = await fetch("/config", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(config),
           });
 
-          statusText.textContent = "Guardado";
-        } catch {
+          if (!response.ok) {
+            throw new Error("No se pudo guardar la configuracion");
+          }
+
+          statusText.textContent = enabledInput.checked
+            ? "Configuracion guardada y envio automatico activado"
+            : "Configuracion guardada con envio automatico pausado";
+        } catch (error) {
           statusText.textContent = "Error al guardar";
         }
       }
@@ -204,6 +285,5 @@
 
       loadConfig();
     </script>
-    ```
   </body>
 </html>
