@@ -1,6 +1,6 @@
 const HOURS_IN_MS = 60 * 60 * 1000;
 const DEFAULT_ALLOWED_ORIGINS = ["https://noticias-ya.web.app"];
-const API_BASE_URL = String(window.NOTICIAS_YA_API_URL || "").replace(/\/+$/, "");
+const BACKEND_URL = "https://noticiasya-backend.onrender.com";
 
 const languageLabels = {
   es: "Espanol",
@@ -28,7 +28,7 @@ const heroStatus = document.getElementById("heroStatus");
 let temas = [];
 
 function apiUrl(path) {
-  return `${API_BASE_URL}${path}`;
+  return `${BACKEND_URL}${path}`;
 }
 
 function setStatus(message, type = "") {
