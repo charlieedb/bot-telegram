@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+require("./bot");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,6 +11,7 @@ const cors = require("cors");
 app.use(cors());
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
 if (!fs.existsSync(configPath)) {
   fs.writeFileSync(
@@ -25,6 +27,10 @@ if (!fs.existsSync(configPath)) {
     ),
   );
 }
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 app.get("/config", (req, res) => {
   fs.readFile(configPath, "utf8", (error, data) => {

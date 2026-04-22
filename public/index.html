@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configuración del Bot</title>
+    <title>ConfiguraciÃ³n del Bot</title>
 
     ```
     <style>
@@ -94,12 +94,12 @@
 
   <body>
     <div class="container">
-      <h1>Configuración del Bot</h1>
+      <h1>ConfiguraciÃ³n del Bot</h1>
 
       ```
       <label>Temas</label>
       <div class="tags-container" id="tagsContainer">
-        <input id="temaInput" placeholder="Escribí y presioná Enter" />
+        <input id="temaInput" placeholder="EscribÃ­ y presionÃ¡ Enter" />
       </div>
 
       <label>Intervalo (ms)</label>
@@ -111,7 +111,7 @@
         <option value="en">en</option>
       </select>
 
-      <button id="saveButton">Guardar configuración</button>
+      <button id="saveButton">Guardar configuraciÃ³n</button>
       <p id="status"></p>
     </div>
 
@@ -130,7 +130,7 @@
         temas.forEach((tema, index) => {
           const tag = document.createElement("div");
           tag.className = "tag";
-          tag.innerHTML = `${tema} <span data-index="${index}">×</span>`;
+          tag.innerHTML = `${tema} <span data-index="${index}">Ã—</span>`;
           tagsContainer.insertBefore(tag, temaInput);
         });
       }
@@ -175,7 +175,7 @@
 
       async function saveConfig() {
         if (!temas.length) {
-          statusText.textContent = "Agregá al menos un tema";
+          statusText.textContent = "AgregÃ¡ al menos un tema";
           return;
         }
 
