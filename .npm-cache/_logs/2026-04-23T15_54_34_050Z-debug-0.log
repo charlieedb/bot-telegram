@@ -1,0 +1,68 @@
+0 verbose cli D:\Nodejs\node.exe D:\Nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.3.0
+2 info using node@v24.1.0
+3 silly config load:file:D:\Nodejs\node_modules\npm\npmrc
+4 silly config load:file:D:\BOT TELEGRAM\.npmrc
+5 silly config load:file:C:\Users\carli\.npmrc
+6 silly config load:file:C:\Users\carli\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm exec firebase-tools@latest --version
+8 verbose argv "exec" "--yes" "--" "firebase-tools@latest" "--version"
+9 verbose logfile logs-max:10 dir:D:\BOT TELEGRAM\.npm-cache\_logs\2026-04-23T15_54_34_050Z-
+10 verbose logfile D:\BOT TELEGRAM\.npm-cache\_logs\2026-04-23T15_54_34_050Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 http fetch GET 200 https://registry.npmjs.org/npm 507ms
+14 http fetch GET 200 https://registry.npmjs.org/firebase-tools 430ms (cache miss)
+15 verbose type system
+16 verbose stack FetchError: Invalid response body while trying to fetch https://registry.npmjs.org/firebase-tools: EPERM: operation not permitted, unlink 'D:\BOT TELEGRAM\.npm-cache\_cacache\tmp\5e805261'
+16 verbose stack     at D:\Nodejs\node_modules\npm\node_modules\minipass-fetch\lib\body.js:170:15
+16 verbose stack     at async Response.json (D:\Nodejs\node_modules\npm\node_modules\minipass-fetch\lib\body.js:75:17)
+16 verbose stack     at async RegistryFetcher.packument (D:\Nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:98:25)
+16 verbose stack     at async RegistryFetcher.manifest (D:\Nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:128:23)
+16 verbose stack     at async getManifest (D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:28:22)
+16 verbose stack     at async missingFromTree (D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:68:22)
+16 verbose stack     at async D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:185:32
+16 verbose stack     at async Promise.all (index 0)
+16 verbose stack     at async exec (D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:183:3)
+16 verbose stack     at async Npm.exec (D:\Nodejs\node_modules\npm\lib\npm.js:208:9)
+17 error code EPERM
+18 error syscall unlink
+19 error path D:\BOT TELEGRAM\.npm-cache\_cacache\tmp\5e805261
+20 error errno EPERM
+21 error FetchError: Invalid response body while trying to fetch https://registry.npmjs.org/firebase-tools: EPERM: operation not permitted, unlink 'D:\BOT TELEGRAM\.npm-cache\_cacache\tmp\5e805261'
+21 error     at D:\Nodejs\node_modules\npm\node_modules\minipass-fetch\lib\body.js:170:15
+21 error     at async Response.json (D:\Nodejs\node_modules\npm\node_modules\minipass-fetch\lib\body.js:75:17)
+21 error     at async RegistryFetcher.packument (D:\Nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:98:25)
+21 error     at async RegistryFetcher.manifest (D:\Nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:128:23)
+21 error     at async getManifest (D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:28:22)
+21 error     at async missingFromTree (D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:68:22)
+21 error     at async D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:185:32
+21 error     at async Promise.all (index 0)
+21 error     at async exec (D:\Nodejs\node_modules\npm\node_modules\libnpmexec\lib\index.js:183:3)
+21 error     at async Npm.exec (D:\Nodejs\node_modules\npm\lib\npm.js:208:9) {
+21 error   code: 'EPERM',
+21 error   errno: 'EPERM',
+21 error   syscall: 'unlink',
+21 error   path: 'D:\\BOT TELEGRAM\\.npm-cache\\_cacache\\tmp\\5e805261',
+21 error   type: 'system'
+21 error }
+22 error
+22 error The operation was rejected by your operating system.
+22 error It's possible that the file was already in use (by a text editor or antivirus),
+22 error or that you lack permissions to access it.
+22 error
+22 error If you believe this might be a permissions issue, please double-check the
+22 error permissions of the file and its containing directories, or try running
+22 error the command again as root/Administrator.
+23 verbose cwd D:\BOT TELEGRAM
+24 verbose os Windows_NT 10.0.19045
+25 verbose node v24.1.0
+26 verbose npm  v11.3.0
+27 notice
+27 notice New minor version of npm available! 11.3.0 -> 11.13.0
+27 notice Changelog: https://github.com/npm/cli/releases/tag/v11.13.0
+27 notice To update run: npm install -g npm@11.13.0
+27 notice  { force: true, Symbol(proc-log.meta): true }
+28 verbose exit 1
+29 verbose code 1
+30 error A complete log of this run can be found in: D:\BOT TELEGRAM\.npm-cache\_logs\2026-04-23T15_54_34_050Z-debug-0.log

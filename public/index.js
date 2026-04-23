@@ -1,6 +1,19 @@
 const HOURS_IN_MS = 60 * 60 * 1000;
 const DEFAULT_ALLOWED_ORIGINS = ["https://noticias-ya.web.app"];
-const BACKEND_URL = "https://noticiasya-backend.onrender.com";
+const DEFAULT_BACKEND_URL = "https://noticiasya-backend.onrender.com";
+
+function normalizeBackendUrl(value) {
+  const rawValue = String(value || "").trim();
+  const baseUrl = rawValue || DEFAULT_BACKEND_URL;
+
+  if (baseUrl.startsWith("/")) {
+    return `${window.location.origin}${baseUrl}`.replace(/\/+$/, "");
+  }
+
+  return baseUrl.replace(/\/+$/, "");
+}
+
+const BACKEND_URL = normalizeBackendUrl(window.NOTICIAS_YA_API_URL);
 
 const languageLabels = {
   es: "Espanol",
@@ -28,7 +41,8 @@ const heroStatus = document.getElementById("heroStatus");
 let temas = [];
 
 function apiUrl(path) {
-  return `${BACKEND_URL}${path}`;
+  const normalizedPath = String(path || "").startsWith("/") ? String(path || "") : `/${path}`;
+  return `${BACKEND_URL}${normalizedPath}`;
 }
 
 function setStatus(message, type = "") {
